@@ -12,7 +12,7 @@ cask "dashi" do
   # Flip to true once the app is notarized and Sparkle (SUPublicEDKey) is live,
   # so Homebrew defers self-updates to Sparkle.
   auto_updates false
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "Dashi.app"
 

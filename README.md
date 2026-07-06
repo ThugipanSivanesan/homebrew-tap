@@ -7,6 +7,7 @@ gauge for Claude and Codex subscription usage.
 
 ```sh
 brew tap ThugipanSivanesan/tap
+brew trust thugipansivanesan/tap          # one-time: approve this third-party tap
 brew install --cask --no-quarantine dashi
 ```
 
