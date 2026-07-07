@@ -16,7 +16,5 @@ cask "dashi" do
 
   app "Dashi.app"
 
-  zap trash: [
-    "~/Library/Preferences/com.dashi.app.plist",
-  ]
+  zap trash: "~/Library/Preferences/com.dashi.app.plist"
 end

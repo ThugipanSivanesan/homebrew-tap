@@ -1,0 +1,15 @@
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.p8
+secrets/
+
+# macOS
+.DS_Store
+
+# Editor/scratch
+*.swp

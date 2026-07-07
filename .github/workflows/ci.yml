@@ -1,0 +1,63 @@
+name: CI
+
+# PR-gated, plus push-to-main (the Dashi `bump-tap` bot commits version bumps
+# straight to main with no PR, so those bumps must be validated on push), plus a
+# weekly re-scan so newly-disclosed leaks/CVEs surface even with no new commits.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cask-audit:
+    name: Cask style & audit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      # Make the checkout resolvable as a real tap so `brew style`/`brew audit`
+      # treat it as ThugipanSivanesan/tap rather than a loose file.
+      - name: Link repo into Homebrew as a tap
+        run: |
+          set -euo pipefail
+          TAP_DIR="$(brew --repository)/Library/Taps/thugipansivanesan/homebrew-tap"
+          mkdir -p "$(dirname "$TAP_DIR")"
+          ln -sf "$GITHUB_WORKSPACE" "$TAP_DIR"
+
+      - name: brew style
+        run: brew style thugipansivanesan/tap
+
+      # --online verifies the download URL is reachable and the sha256 matches
+      # the published release asset.
+      - name: brew audit (cask, online)
+        run: brew audit --online --cask thugipansivanesan/tap/dashi
+
+  gitleaks:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      # Pinned CLI binary, not the marketplace action (the action calls the
+      # GitHub API and 403s on fork/Dependabot PRs).
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          V=8.30.1
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${V}/gitleaks_${V}_linux_x64.tar.gz" -o gl.tgz
+          tar -xzf gl.tgz gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+
+      - name: Scan history for secrets
+        run: gitleaks git . --redact --no-banner --exit-code 1

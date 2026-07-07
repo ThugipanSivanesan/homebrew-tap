@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # A tap has no package manifest to update — only the GitHub Actions it pins.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns: ["*"]
