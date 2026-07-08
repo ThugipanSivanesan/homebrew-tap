@@ -1,6 +1,6 @@
 cask "dashi" do
-  version "0.3.0"
-  sha256 "c6c1b9fbacb5bc5c2cfbb83377295d4f2c528c63b58993a9383b6e177f00e95a"
+  version "0.3.1"
+  sha256 "f0547c42f7566188eb3692dbc08026a1b796ccbebd5a8ad68701220a8cbdbc58"
 
   url "https://github.com/ThugipanSivanesan/Dashi/releases/download/v#{version}/Dashi-#{version}.zip"
   name "Dashi"
