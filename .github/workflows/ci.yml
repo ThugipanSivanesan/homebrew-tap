@@ -37,8 +37,12 @@ jobs:
         run: brew style thugipansivanesan/tap
 
       # --online verifies the download URL is reachable and the sha256 matches
-      # the published release asset.
+      # the published release asset. It also hits the GitHub API, which without
+      # a token falls back to the unauthenticated 60/hr limit shared across
+      # everything on the runner's IP — and that intermittently fails the audit.
       - name: brew audit (cask, online)
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: brew audit --online --cask thugipansivanesan/tap/dashi
 
   gitleaks:
